@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simplechat-eureka
+  namespace: simplechat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simplechat-eureka
+  template:
+    metadata:
+      labels:
+        app: simplechat-eureka
+    spec:
+      containers:
+      - name: simplechat-eureka
+        image: localhost:5000/simplechat-eureka:latest
+        envFrom:
+          - configMapRef:
+              name: simplechat-config

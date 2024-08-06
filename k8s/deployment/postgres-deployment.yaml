@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simplechat-postgres
+  namespace: simplechat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simplechat-postgres
+  template:
+    metadata:
+      labels:
+        app: simplechat-postgres
+    spec:
+      containers:
+        - name: simplechat-postgres
+          image: postgres:latest
+          env:
+          - name: POSTGRES_DB
+            value: simplechat
+          - name: POSTGRES_USER
+            value: postgres
+          - name: POSTGRES_PASSWORD
+            value: admin
+          ports:
+          - containerPort: 5432

@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: app
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: admin
+    exchange: chat.exchange
+    queue: chat.queue
+    routingkey: input.chat.message
+server:
+  port: 0
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8081/eureka
+  instance:
+    prefer-ip-address: true
+    instance-id: ${random.uuid}

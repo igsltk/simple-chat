@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simplechat-chats
+  namespace: simplechat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simplechat-chats
+  template:
+    metadata:
+      labels:
+        app: simplechat-chats
+    spec:
+      containers:
+      - name: simplechat-chats
+        image: localhost:5000/simplechat-chats:latest
+        env:
+          - name: SERVER_PORT
+            value: "8083"
+        envFrom:
+          - configMapRef:
+              name: simplechat-config

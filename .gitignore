@@ -1,0 +1,3 @@
+*.bat
+k8s/secret-creation.txt
+*/target

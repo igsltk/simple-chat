@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: simplechat-eureka
+  namespace: simplechat
+spec:
+  selector:
+    app: simplechat-eureka
+  ports:
+    - port: 8081
+      targetPort: 8081
+  type: ClusterIP

@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: simplechat-rabbitmq
+  namespace: simplechat
+spec:
+  #type: ClusterIP
+  type: NodePort
+  ports:
+    - name: amqp
+      port: 5672
+      targetPort: 5672
+    - name: management
+      port: 15672
+      targetPort: 15672
+      nodePort: 30001
+  selector:
+    app: simplechat-rabbitmq

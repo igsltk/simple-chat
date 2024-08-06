@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simplechat-rabbitmq
+  namespace: simplechat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simplechat-rabbitmq
+  template:
+    metadata:
+      labels:
+        app: simplechat-rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:management-alpine
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              value: "user"
+            - name: RABBITMQ_DEFAULT_PASS
+              value: "admin"
+            - name: RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
+              value: '-rabbitmq_management load_definitions "/etc/rabbitmq/rabbitmq_definitions.json"'
+          ports:
+            - containerPort: 5672
+            - containerPort: 15672
+          volumeMounts:
+            - name: rabbitmq-config-volume
+              mountPath: /etc/rabbitmq/rabbitmq_definitions.json
+              subPath: simplechat_rabbitmq_definitions
+      volumes:
+        - name: rabbitmq-config-volume
+          secret:
+            secretName: simplechat-rabbitmq-definitions

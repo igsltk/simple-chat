@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      routes:
+        - id: appModule
+          uri: lb://app
+          predicates:
+            - Path=/app/**
+        - id: staticResources
+          uri: lb://app
+          predicates:
+            - Path=/css/**, /js/**, /images/**
+        - id: chatsModule
+          uri: lb://chats
+          predicates:
+            - Path=/chats/**
+server:
+  port: 8080
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8081/eureka
+  instance:
+    prefer-ip-address: true

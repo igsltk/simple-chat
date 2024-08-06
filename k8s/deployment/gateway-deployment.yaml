@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simplechat-gateway
+  namespace: simplechat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simplechat-gateway
+  template:
+    metadata:
+      labels:
+        app: simplechat-gateway
+    spec:
+      containers:
+      - name: simplechat-gateway
+        image: localhost:5000/simplechat-gateway:latest
+        envFrom:
+          - configMapRef:
+              name: simplechat-config

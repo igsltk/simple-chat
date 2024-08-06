@@ -1,0 +1,129 @@
+services:
+
+  simplechat-app:
+    build: app/.
+    links:
+      - simplechat-eureka
+      - simplechat-rabbitmq
+    environment:
+      SPRING_RABBITMQ_HOST: simplechat-rabbitmq
+      SPRING_RABBITMQ_USERNAME: user
+      SPRING_RABBITMQ_PASSWORD: admin
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://simplechat-eureka:8081/eureka
+    networks:
+      - alan
+    restart: always
+    depends_on:
+      simplechat-eureka:
+        condition: service_healthy
+
+  simplechat-chats:
+    build: chats/.
+    links:
+      - simplechat-eureka
+      - simplechat-rabbitmq
+      - simplechat-postgres
+      - simplechat-redis
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://simplechat-postgres/simplechat
+      SPRING_RABBITMQ_HOST: simplechat-rabbitmq
+      SPRING_RABBITMQ_USERNAME: user
+      SPRING_RABBITMQ_PASSWORD: admin
+      SPRING_REDIS_HOST: simplechat-redis
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://simplechat-eureka:8081/eureka
+    networks:
+      - alan
+    restart: always
+    depends_on:
+      simplechat-eureka:
+        condition: service_healthy
+  
+  simplechat-gateway:
+    build: gateway/.
+    links:
+      - simplechat-eureka
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://simplechat-eureka:8081/eureka
+    ports:
+      - "8080:8080"
+    networks:
+      - alan
+    restart: always
+    depends_on:
+      - simplechat-app
+      - simplechat-chats
+  
+  simplechat-eureka:
+    build: eureka/.
+    ports:
+      - "8081:8081"
+    networks:
+      - alan
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://simplechat-eureka:8081"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  simplechat-rabbitmq:
+    image: rabbitmq:management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: admin
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: -rabbitmq_management load_definitions "/run/secrets/rabbit_config"
+    secrets:
+      - rabbit_config
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - alan
+    restart: always
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  simplechat-redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - alan
+    restart: always
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  simplechat-postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: simplechat
+    ports:
+      - "5432:5432"
+    volumes:
+      - simplechat-data:/var/simplechat-postgres/
+    networks:
+      - alan
+    restart: always
+    healthcheck:
+      test: ["CMD", "pg_isready -U postgres -d simplechat"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  simplechat-data:
+
+networks:
+  alan:
+
+secrets:
+  rabbit_config:
+    file: ./rabbitmq_definitions.json
