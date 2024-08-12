@@ -15,24 +15,24 @@
 * Kubernetes (k8s)
 
 ## Overview
-This project is a microservices-based architecture designed to facilitate efficient communication and message routing. The system is composed of four main services: app, chats, eureka, and gateway. Each service has a distinct role, contributing to the overall functionality and robustness of the application.
+This project is a microservices-based architecture designed to facilitate efficient communication and message routing. The system is composed of four main services: `app`, `chats`, `eureka`, and `gateway`. Each service has a distinct role, contributing to the overall functionality and robustness of the application.
 
 ### Microservices Components
 
 #### 1. App Service
-* Description: The app service is the central component of the system. It handles the core business logic and is responsible for sending messages.
-* Functionality: When a message needs to be sent, the app service publishes it to RabbitMQ, a messaging broker, which ensures reliable message delivery to the intended recipient service.
+* Description: The `app` service is the central component of the system. It handles the core business logic and is responsible for sending messages.
+* Functionality: When a message needs to be sent, the `app` service publishes it to RabbitMQ, a messaging broker, which ensures reliable message delivery to the intended recipient service.
 
 #### 2. Chats Service
-* Description: The chats service is dedicated to managing and processing chat messages.
-* Functionality: It consumes messages from RabbitMQ that are sent by the app service. The chats service handles these messages appropriately, such as storing them, updating chat history, or triggering further actions within the chat context. By the way, this service caching messages in Redis.
+* Description: The `chats` service is dedicated to managing and processing chat messages.
+* Functionality: It consumes messages from RabbitMQ that are sent by the `app` service. The `chats` service handles these messages appropriately, such as storing them, updating chat history, or triggering further actions within the chat context. By the way, this service caching messages in Redis.
 
 #### 3. Eureka Service
-* Description: The eureka service acts as a service registry, allowing other microservices to discover each other.
+* Description: The `eureka` service acts as a service registry, allowing other microservices to discover each other.
 * Functionality: By registering each service instance with Eureka, the system maintains an updated directory of all running services and their instances. This dynamic discovery is crucial for ensuring that messages are routed correctly and services can communicate seamlessly.
 
 #### 4. Gateway Service
-* Description: The gateway service serves as an entry point for all client requests and manages routing and load balancing.
+* Description: The `gateway` service serves as an entry point for all client requests and manages routing and load balancing.
 * Functionality: It routes incoming requests to the appropriate microservice instance based on the request's nature and current system load. The gateway's load balancing capabilities help distribute traffic evenly across service instances, ensuring optimal performance and reliability.
 
 ### Communication Flow
